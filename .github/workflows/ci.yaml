@@ -22,13 +22,13 @@ jobs:
       - name: build image
         run: make docker-build
 
-#      - name: login to docker
-#        if: ${{ github.event_name != 'pull_request' }}
-#        run: make docker-login
-#        env:
-#          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#
-#      - name: push image
-#        if: ${{ github.event_name != 'pull_request' }}
-#        run: make docker-release
+      - name: login to docker
+        if: ${{ github.event_name != 'pull_request' }}
+        run: make docker-login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: push image
+        if: ${{ github.event_name != 'pull_request' }}
+        run: make docker-release
