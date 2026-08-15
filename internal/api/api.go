@@ -8,6 +8,8 @@ import (
 	"github.com/HemlockPham7/common-libs/pkg/middleware"
 	"github.com/HemlockPham7/common-libs/pkg/ratelimitutils"
 	"github.com/HemlockPham7/common-libs/pkg/utils"
+	"github.com/HemlockPham7/user-service/docs"
+	_ "github.com/HemlockPham7/user-service/docs"
 	userHdl "github.com/HemlockPham7/user-service/internal/app/handler/user"
 	userRepo "github.com/HemlockPham7/user-service/internal/app/repository/user"
 	userSvc "github.com/HemlockPham7/user-service/internal/app/service/user"
@@ -105,6 +107,7 @@ func (e *engine) initRoutes() {
 	allHandlers := e.initHandlers()
 	allMiddlewares := e.initMiddlewares()
 
+	docs.SwaggerInfo.BasePath = e.cfg.BasePath
 	e.app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	privateRoutes := e.app.Group("")
