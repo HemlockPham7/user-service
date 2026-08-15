@@ -7,60 +7,47 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/HemlockPham7/common-libs/pkg/jwtutils/mocks"
 	redisPkg "github.com/HemlockPham7/common-libs/pkg/redis"
 	"github.com/HemlockPham7/user-service/internal/api"
 	"github.com/HemlockPham7/user-service/internal/integration_test/data/fixtures"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
-func TestUserEndpoint_Login(t *testing.T) {
+func TestUserEndpoint_CreateUser(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
 		name string
 
-		setupTestHTTP         func(api api.Engine) *httptest.ResponseRecorder
-		setupMockJWTGenerator func(t *testing.T) *mocks.JWTGenerator
+		setupTestHTTP func(api api.Engine) *httptest.ResponseRecorder
 
 		expectedStatusCode   int
 		expectedResponseBody string
 	}{
 		{
-			name: "user login successfully",
+			name: "user register successfully",
 
 			setupTestHTTP: func(api api.Engine) *httptest.ResponseRecorder {
-				req, rec := setupRequestUserLogin("testuser001", "my_SECURE_password123@")
+				req, rec := setupRequestUserRegister("user1234", "user1234", "User 1234", "user1234@gmail.com")
 				api.ServeHTTP(rec, req)
 				return rec
 			},
 
-			setupMockJWTGenerator: func(t *testing.T) *mocks.JWTGenerator {
-				mockJWTGenerator := mocks.NewJWTGenerator(t)
-				mockJWTGenerator.On("GenerateJWT", mock.Anything).Return("valid_jwt_token", nil)
-				return mockJWTGenerator
-			},
-
-			expectedStatusCode:   http.StatusOK,
-			expectedResponseBody: `{"data":"valid_jwt_token","message":"Logged in successfully!"}`,
+			expectedStatusCode:   http.StatusCreated,
+			expectedResponseBody: `message":"Register an user successfully!"`,
 		},
 		{
-			name: "invalid user login payload",
+			name: "invalid user register payload",
 
 			setupTestHTTP: func(api api.Engine) *httptest.ResponseRecorder {
-				req, rec := setupRequestUserLogin("", "")
+				req, rec := setupRequestUserRegister("password_too_short", "short", "User 1234", "user1234@gmail.com")
 				api.ServeHTTP(rec, req)
 				return rec
-			},
-
-			setupMockJWTGenerator: func(t *testing.T) *mocks.JWTGenerator {
-				return mocks.NewJWTGenerator(t)
 			},
 
 			expectedStatusCode:   http.StatusBadRequest,
-			expectedResponseBody: `{"message":"Input error"`,
+			expectedResponseBody: `"Password is invalid (gte)"`,
 		},
 	}
 
@@ -70,13 +57,11 @@ func TestUserEndpoint_Login(t *testing.T) {
 
 			setupRedisClient := redisPkg.InitMockRedis(t)
 			setupDB := fixtures.NewFixture(t, &fixtures.UserCommonTestDB{})
-			setupJWTGenerator := tc.setupMockJWTGenerator(t)
 			testAPI := api.NewEngine(&api.EngineOpts{
 				App:         gin.Default(),
 				Cfg:         &api.Config{},
 				RedisClient: setupRedisClient,
 				DbClient:    setupDB,
-				JwtGen:      setupJWTGenerator,
 			})
 			recorder := tc.setupTestHTTP(testAPI)
 
@@ -86,9 +71,9 @@ func TestUserEndpoint_Login(t *testing.T) {
 	}
 }
 
-func setupRequestUserLogin(username, password string) (*http.Request, *httptest.ResponseRecorder) {
-	reqBody := fmt.Sprintf(`{"username":"%s","password":"%s"}`, username, password)
-	req := httptest.NewRequest(http.MethodPost, "/v1/users/login", strings.NewReader(reqBody))
+func setupRequestUserRegister(username, password, displayName, email string) (*http.Request, *httptest.ResponseRecorder) {
+	reqBody := fmt.Sprintf(`{"username":"%s","password":"%s","display_name":"%s","email":"%s"}`, username, password, displayName, email)
+	req := httptest.NewRequest(http.MethodPost, "/v1/users/register", strings.NewReader(reqBody))
 	req.Header.Set("Content-Type", "application/json")
 
 	rec := httptest.NewRecorder()
