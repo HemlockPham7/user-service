@@ -5,8 +5,16 @@ import (
 	"net/http"
 
 	"github.com/HemlockPham7/common-libs/pkg/jwtutils"
+	"github.com/HemlockPham7/common-libs/pkg/middleware"
+	"github.com/HemlockPham7/common-libs/pkg/ratelimitutils"
+	"github.com/HemlockPham7/common-libs/pkg/utils"
+	userHdl "github.com/HemlockPham7/user-service/internal/app/handler/user"
+	userRepo "github.com/HemlockPham7/user-service/internal/app/repository/user"
+	userSvc "github.com/HemlockPham7/user-service/internal/app/service/user"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
 )
 
@@ -59,7 +67,73 @@ func (e *engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	e.app.ServeHTTP(w, req)
 }
 
+type handlers struct {
+	userHandler userHdl.Handler
+}
+
+func (e *engine) initHandlers() *handlers {
+	userRepository := userRepo.NewSqlRepository(e.dbClient)
+	hasher := utils.NewHasher()
+	userService := userSvc.NewService(userRepository, hasher, e.jwtGen)
+	userHandler := userHdl.NewHandler(userService)
+
+	return &handlers{
+		userHandler: userHandler,
+	}
+}
+
+type middlewares struct {
+	jwtAuth   middleware.JWTAuth
+	rateLimit middleware.RateLimit
+}
+
+// initMiddlewares initializes the middlewares
+func (e *engine) initMiddlewares() middlewares {
+	jwtAuth := middleware.NewJWTAuth(e.jwtVal)
+
+	rateLimitRepository := ratelimitutils.NewRedisRepo(e.redisClient)
+	rateLimit := middleware.NewRateLimit(rateLimitRepository)
+
+	return middlewares{
+		jwtAuth:   jwtAuth,
+		rateLimit: rateLimit,
+	}
+}
+
 // initRoutes initializes the routes
 func (e *engine) initRoutes() {
-	println("initRoutes")
+	allHandlers := e.initHandlers()
+	allMiddlewares := e.initMiddlewares()
+
+	e.app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	privateRoutes := e.app.Group("")
+	privateRoutes.Use(allMiddlewares.jwtAuth.JWTAuth())
+	privateRoutes.Use(allMiddlewares.rateLimit.RateLimit())
+	{
+		privateV1Routes := privateRoutes.Group("/v1")
+		{
+			selfRoutes := privateV1Routes.Group("/self")
+			{
+				selfRoutes.GET("/info", allHandlers.userHandler.GetSelfInfo)
+			}
+
+			userRoutes := privateV1Routes.Group("/users")
+			{
+				userRoutes.PUT("/update", allHandlers.userHandler.UpdateUserByID)
+			}
+		}
+	}
+
+	publicRoutes := e.app.Group("")
+	{
+		publicV1Routes := publicRoutes.Group("/v1")
+		{
+			usersRoutes := publicV1Routes.Group("/users")
+			{
+				usersRoutes.POST("/register", allHandlers.userHandler.Register)
+				usersRoutes.POST("/login", allHandlers.userHandler.Login)
+			}
+		}
+	}
 }
