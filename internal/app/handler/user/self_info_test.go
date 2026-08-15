@@ -63,7 +63,7 @@ func TestUserHandler_GetSelfInfo(t *testing.T) {
 			expectedResponse: `{"message":"claim not exist"}`,
 		},
 		{
-			name: "successful get self info",
+			name: "internal error",
 
 			setupRequest: func(ctx *gin.Context) {
 				setupGetSelfInfoRequest(ctx, true)
