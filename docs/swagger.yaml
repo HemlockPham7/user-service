@@ -1,0 +1,167 @@
+basePath: /
+definitions:
+  model.User:
+    properties:
+      created_at:
+        type: string
+      display_name:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  user.loginInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  user.registerInput:
+    properties:
+      display_name:
+        type: string
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      username:
+        type: string
+    required:
+    - display_name
+    - email
+    - password
+    - username
+    type: object
+  user.registerResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.User'
+      message:
+        type: string
+    type: object
+  user.updateUserRequest:
+    properties:
+      display_name:
+        type: string
+      email:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is the API documentation for the User service in the Bookmark
+    Management system.
+  title: User Service API
+  version: 1.0.0
+paths:
+  /v1/self/info:
+    get:
+      consumes:
+      - application/json
+      description: get your current information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/model.User'
+            type: object
+      security:
+      - BearerAuth: []
+      summary: get your current information
+      tags:
+      - User
+  /v1/users/login:
+    post:
+      consumes:
+      - application/json
+      description: Return a jwt token if the input is correct
+      parameters:
+      - description: Input required
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.loginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            properties:
+              message:
+                type: string
+              token:
+                type: string
+            type: object
+      summary: Return a jwt token if the input is correct
+      tags:
+      - User
+  /v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided information
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.registerInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.registerResponse'
+      summary: Register a new user
+      tags:
+      - User
+  /v1/users/update:
+    put:
+      consumes:
+      - application/json
+      description: update user by ID
+      parameters:
+      - description: User update details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.updateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: update user by ID
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

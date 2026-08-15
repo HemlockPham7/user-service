@@ -23,7 +23,7 @@ type updateUserRequest struct {
 // @Accept application/json
 // @Produce application/json
 // @Param user body updateUserRequest true "User update details"
-// @Success 200 {object} response.Message
+// @Success      200      {object}  object{message=string}
 // @Router /v1/users/update [put]
 func (h *userHandler) UpdateUserByID(c *gin.Context) {
 	request, uid, err := requestutils.BindInputFromRequestWithAuth[updateUserRequest](c)
