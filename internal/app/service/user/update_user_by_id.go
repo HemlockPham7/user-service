@@ -1,16 +1,16 @@
 package user
 
-import "context"
+import (
+	"context"
+
+	"github.com/HemlockPham7/user-service/internal/app/model"
+)
 
 func (s *service) UpdateUserByID(ctx context.Context, uid, displayName, email string) error {
-	currentUser, err := s.GetSelfInfo(ctx, uid)
-	if err != nil {
-		return err
+	updatedUser := &model.User{
+		DisplayName: displayName,
+		Email:       email,
 	}
-
-	updatedUser := currentUser
-	updatedUser.DisplayName = displayName
-	updatedUser.Email = email
 
 	return s.repo.UpdateUserByID(ctx, uid, updatedUser)
 }
