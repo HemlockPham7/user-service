@@ -3,21 +3,21 @@
 FROM golang:1.26-alpine AS base
 
 RUN mkdir -p /opt/app
-
 WORKDIR /opt/app
+RUN apk add build-base
 
-COPY . .
-
+COPY go.mod ./go.mod
+COPY go.sum ./go.sum
 RUN go mod download
 
-RUN apk add build-base
+COPY . .
 
 ### Build ###
 
 FROM base AS build
 
 RUN GOOS=linux go build -tags musl -ldflags "-w -s" \
-    -o bookmark-service cmd/api/main.go
+    -o user-service cmd/api/main.go
 
 ### TEST-EXEC ###
 
@@ -45,7 +45,8 @@ FROM alpine:3.24.1 AS final
 
 WORKDIR /app
 
-COPY --from=build /opt/app/bookmark-service /app/bookmark-service
+COPY --from=build /opt/app/user-service /app/user-service
 COPY --from=build /opt/app/docs /app/docs
+COPY --from=build /opt/app/migrations /app/migrations
 
-CMD ["/app/bookmark-service"]
+CMD ["/app/user-service"]
