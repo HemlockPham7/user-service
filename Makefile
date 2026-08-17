@@ -10,7 +10,7 @@ endif
 export IMG_TAG
 
 COVERAGE_EXCLUDE=mocks|main.go|test|config.go|client.go|level.go|mock.go|request.go|parser.go|postgres_data|infrastructure|migration.go
-COVERAGE_THRESHOLD=70
+COVERAGE_THRESHOLD=90
 COVERAGE_FOLDER=./test-output
 
 docker-test:
