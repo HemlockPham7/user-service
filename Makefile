@@ -42,4 +42,8 @@ run:
 swagger:
 	swag init -g cmd/api/main.go --output docs
 
+generate-rsa-key:
+	openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+	openssl rsa -pubout -in private.pem -out public.pem
+
 dev-run: swagger run

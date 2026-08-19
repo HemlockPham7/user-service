@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis-user-service
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:17
+    container_name: postgres-user-service
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data:Z
+
+  user-service:
+    build: .
+    container_name: user-service
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./public.pem:/app/public.pem
+      - ./private.pem:/app/private.pem

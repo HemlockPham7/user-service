@@ -16,8 +16,13 @@ type Config struct {
 
 // NewConfig creates a new config
 func NewConfig() (*Config, error) {
+	//err := godotenv.Load()
+	//if err != nil {
+	//	panic(err)
+	//}
+
 	cfg := &Config{}
-	err := envconfig.Process("api", cfg)
+	err := envconfig.Process("user", cfg)
 	if err != nil {
 		return nil, err
 	}
