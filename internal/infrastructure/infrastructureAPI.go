@@ -22,10 +22,10 @@ func CreateAPI() api.Engine {
 	logger.SetLogLevel(cfg.LogLevel)
 
 	// create redis client
-	redisClient := CreateRedisClient("")
+	redisClient := CreateRedisClient("user")
 
 	// Init db
-	db := CreateDB("")
+	db := CreateDB("user")
 
 	jwtGen, jwtVal := CreateJWTProvider()
 
