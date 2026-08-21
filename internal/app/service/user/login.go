@@ -7,6 +7,7 @@ import (
 
 	"github.com/HemlockPham7/common-libs/pkg/dbutils"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 const tokenDuration = time.Hour * 24
@@ -15,6 +16,9 @@ var ErrInvalidCredentials = errors.New("invalid credentials")
 var ErrCannotGenerateToken = errors.New("cannot generate token")
 
 func (s *service) Login(ctx context.Context, username, password string) (string, error) {
+	span := newrelic.FromContext(ctx).StartSegment("Login_UserService")
+	defer span.End()
+
 	// check user exists with username
 	user, err := s.repo.GetUserByUsername(ctx, username)
 	switch {

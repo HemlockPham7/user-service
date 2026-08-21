@@ -6,6 +6,7 @@ import (
 	"github.com/HemlockPham7/common-libs/pkg/requestutils"
 	"github.com/HemlockPham7/common-libs/pkg/response"
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,6 +20,9 @@ import (
 // @Success 200 {object} object{data=model.User} "Success"
 // @Router /v1/self/info [get]
 func (h *userHandler) GetSelfInfo(c *gin.Context) {
+	span := newrelic.FromContext(c).StartSegment("GetSelfInfo_UserHandler")
+	defer span.End()
+
 	uid, err := requestutils.GetUserIDFromRequest(c)
 	if err != nil {
 		return

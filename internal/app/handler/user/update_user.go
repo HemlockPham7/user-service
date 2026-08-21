@@ -7,6 +7,7 @@ import (
 	"github.com/HemlockPham7/common-libs/pkg/requestutils"
 	"github.com/HemlockPham7/common-libs/pkg/response"
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 )
 
@@ -26,6 +27,9 @@ type updateUserRequest struct {
 // @Success      200      {object}  object{message=string}
 // @Router /v1/users/update [put]
 func (h *userHandler) UpdateUserByID(c *gin.Context) {
+	span := newrelic.FromContext(c).StartSegment("UpdateUserByID_UserHandler")
+	defer span.End()
+
 	request, uid, err := requestutils.BindInputFromRequestWithAuth[updateUserRequest](c)
 	if err != nil {
 		return

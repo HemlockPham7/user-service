@@ -9,6 +9,7 @@ import (
 	"github.com/HemlockPham7/common-libs/pkg/response"
 	"github.com/HemlockPham7/user-service/internal/app/model"
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 )
 
@@ -37,6 +38,9 @@ type registerResponse struct {
 // @Success 201 {object} registerResponse
 // @Router /v1/users/register [post]
 func (h *userHandler) Register(c *gin.Context) {
+	span := newrelic.FromContext(c).StartSegment("Register_UserHandler")
+	defer span.End()
+
 	input, err := requestutils.BindInputFromRequest[registerInput](c)
 	if err != nil {
 		return
