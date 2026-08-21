@@ -8,6 +8,7 @@ import (
 	"github.com/HemlockPham7/common-libs/pkg/response"
 	"github.com/HemlockPham7/user-service/internal/app/service/user"
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog/log"
 )
 
@@ -31,6 +32,9 @@ type loginResponse struct {
 // @Success 200 {object} object{token=string,message=string} "Success"
 // @Router /v1/users/login [post]
 func (h *userHandler) Login(c *gin.Context) {
+	span := newrelic.FromContext(c).StartSegment("Login_UserHandler")
+	defer span.End()
+
 	// doc body input
 	input, err := requestutils.BindInputFromRequest[loginInput](c)
 	if err != nil {

@@ -6,8 +6,8 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
-func CreateNRClient() *newrelic.Application {
-	nrClient, err := nrtrace.NewClient("user")
+func CreateNRClient(envPrefix string) *newrelic.Application {
+	nrClient, err := nrtrace.NewClient(envPrefix)
 	common.HandleError(err)
 	return nrClient
 }

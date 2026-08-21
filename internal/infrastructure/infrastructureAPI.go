@@ -30,7 +30,7 @@ func CreateAPI() api.Engine {
 	jwtGen, jwtVal := CreateJWTProvider()
 
 	// Create New Relic client
-	nrClient := CreateNRClient()
+	nrClient := CreateNRClient("user")
 
 	app := gin.Default()
 
