@@ -29,6 +29,9 @@ func CreateAPI() api.Engine {
 
 	jwtGen, jwtVal := CreateJWTProvider()
 
+	// Create New Relic client
+	nrClient := CreateNRClient()
+
 	app := gin.Default()
 
 	return api.NewEngine(&api.EngineOpts{
@@ -38,5 +41,6 @@ func CreateAPI() api.Engine {
 		DbClient:    db,
 		JwtGen:      jwtGen,
 		JwtVal:      jwtVal,
+		NrClient:    nrClient,
 	})
 }

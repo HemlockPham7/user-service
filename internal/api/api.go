@@ -14,6 +14,8 @@ import (
 	userRepo "github.com/HemlockPham7/user-service/internal/app/repository/user"
 	userSvc "github.com/HemlockPham7/user-service/internal/app/service/user"
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/integrations/nrgin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/redis/go-redis/v9"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -34,6 +36,7 @@ type engine struct {
 	dbClient    *gorm.DB
 	jwtGen      jwtutils.JWTGenerator
 	jwtVal      jwtutils.JWTValidator
+	nrClient    *newrelic.Application
 }
 
 type EngineOpts struct {
@@ -43,6 +46,7 @@ type EngineOpts struct {
 	DbClient    *gorm.DB
 	JwtGen      jwtutils.JWTGenerator
 	JwtVal      jwtutils.JWTValidator
+	NrClient    *newrelic.Application
 }
 
 // NewEngine creates a new engine
@@ -54,6 +58,7 @@ func NewEngine(opts *EngineOpts) Engine {
 		dbClient:    opts.DbClient,
 		jwtGen:      opts.JwtGen,
 		jwtVal:      opts.JwtVal,
+		nrClient:    opts.NrClient,
 	}
 	app.initRoutes()
 	return app
@@ -106,6 +111,9 @@ func (e *engine) initMiddlewares() middlewares {
 func (e *engine) initRoutes() {
 	allHandlers := e.initHandlers()
 	allMiddlewares := e.initMiddlewares()
+
+	// Add New Relic middleware
+	e.app.Use(nrgin.Middleware(e.nrClient))
 
 	docs.SwaggerInfo.BasePath = e.cfg.BasePath
 	e.app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
