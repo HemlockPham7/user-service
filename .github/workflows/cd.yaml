@@ -13,21 +13,6 @@ jobs:
       github.event.workflow_run.head_branch != 'main'
     runs-on: self-hosted
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Create .env file
-        run: |
-          mkdir -p ./deployment/shorten-url-deployment
-          echo "${{ secrets.USER_SERVICE_ENV }}" > ./deployment/shorten-url-deployment/user-service/.env
-
-      - name: login to docker
-        working-directory: ./deployment/shorten-url-deployment
-        run: make docker-login
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Deploy User Service
         working-directory: ./deployment/shorten-url-deployment
         run: |
