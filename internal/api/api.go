@@ -13,6 +13,7 @@ import (
 	userHdl "github.com/HemlockPham7/user-service/internal/app/handler/user"
 	userRepo "github.com/HemlockPham7/user-service/internal/app/repository/user"
 	userSvc "github.com/HemlockPham7/user-service/internal/app/service/user"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -111,6 +112,28 @@ func (e *engine) initMiddlewares() middlewares {
 func (e *engine) initRoutes() {
 	allHandlers := e.initHandlers()
 	allMiddlewares := e.initMiddlewares()
+
+	// cors
+	e.app.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:5173",
+		},
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"PATCH",
+			"DELETE",
+			"OPTIONS",
+		},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Accept",
+			"Authorization",
+		},
+		AllowCredentials: true,
+	}))
 
 	// Add New Relic middleware
 	e.app.Use(nrgin.Middleware(e.nrClient))
