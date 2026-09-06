@@ -80,6 +80,10 @@ user-service/
 
 ![Self Info](asset/self-info/img.png)
 
+#### Update users information
+
+![Update user](asset/update-user/img.png)
+
 ---
 
 ## Getting Started
