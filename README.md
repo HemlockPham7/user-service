@@ -61,6 +61,10 @@ user-service/
 | `POST` | `v1/users/register` | Register a new user |
 | `POST` | `v1/users/login`    | Login a user        |
 
+#### Register a new user
+
+![Create User](asset/create-user/img.png)
+
 ### Protected (JWT Description)
 
 | Method | Path              | Description               |

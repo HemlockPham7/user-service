@@ -6,6 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateAPIConfig creates the application configuration from environment variables.
+//
+// It panics if the configuration cannot be initialized.
 func CreateAPIConfig() *api.Config {
 	cfg, err := api.NewConfig()
 	if err != nil {
@@ -14,6 +17,13 @@ func CreateAPIConfig() *api.Config {
 	return cfg
 }
 
+// CreateAPI initializes the application and its required dependencies.
+//
+// It configures the log level, Redis client, database connection, JWT providers,
+// New Relic client, and Gin HTTP engine before creating the application engine.
+//
+// Returns:
+//   - The initialized application engine.
 func CreateAPI() api.Engine {
 	// create app config
 	cfg := CreateAPIConfig()
