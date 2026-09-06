@@ -15,6 +15,19 @@ const tokenDuration = time.Hour * 24
 var ErrInvalidCredentials = errors.New("invalid credentials")
 var ErrCannotGenerateToken = errors.New("cannot generate token")
 
+// Login authenticates a user with the provided username and password
+// and generates a JWT token for the authenticated user.
+//
+// Parameters:
+//   - ctx: the context used for the operation.
+//   - username: the username used for authentication.
+//   - password: the plain-text password to verify.
+//
+// Returns:
+//   - A signed JWT token if authentication succeeds.
+//   - ErrInvalidCredentials if the username or password is incorrect.
+//   - ErrCannotGenerateToken if the JWT cannot be generated.
+//   - An error if the user cannot be retrieved.
 func (s *service) Login(ctx context.Context, username, password string) (string, error) {
 	span := newrelic.FromContext(ctx).StartSegment("Login_UserService")
 	defer span.End()

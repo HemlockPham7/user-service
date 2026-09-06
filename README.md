@@ -65,6 +65,10 @@ user-service/
 
 ![Create User](asset/create-user/img.png)
 
+#### Login a user
+
+![Login User](asset/login-user/img.png)
+
 ### Protected (JWT Description)
 
 | Method | Path              | Description               |
