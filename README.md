@@ -76,6 +76,9 @@ user-service/
 | `GET`  | `v1/self/info`    | Get information of user   |
 | `PUT`  | `v1/users/update` | Update user's information |
 
+#### Get information of user
+
+![Self Info](asset/self-info/img.png)
 
 ---
 
