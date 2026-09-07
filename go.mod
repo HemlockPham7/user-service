@@ -3,7 +3,7 @@ module github.com/HemlockPham7/user-service
 go 1.26.4
 
 require (
-	github.com/HemlockPham7/common-libs v0.0.6
+	github.com/HemlockPham7/common-libs v1.0.0
 	github.com/gin-gonic/gin v1.12.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0

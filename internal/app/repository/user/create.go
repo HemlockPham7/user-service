@@ -8,6 +8,16 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
+// CreateUser creates a new user record in the database.
+//
+// Database errors are converted into application-specific errors when applicable.
+//
+// Parameters:
+//   - ctx: the context used for the database operation.
+//   - newUser: the user model to persist.
+//
+// Returns:
+//   - The created user, or an error if the user cannot be persisted.
 func (r *sqlRepository) CreateUser(ctx context.Context, newUser *model.User) (*model.User, error) {
 	span := newrelic.FromContext(ctx).StartSegment("CreateUser_UserRepository")
 	defer span.End()
